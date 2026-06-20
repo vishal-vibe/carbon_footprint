@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoStep - Track, Understand & Reduce Your Carbon Footprint</title>
+  <meta name="description" content="Track your carbon footprint, get child-friendly insights, and take simple actions to save the Earth. Premium interactive dashboard and calculator.">
+  
+  <!-- Fonts: Outfit for premium modern feel, Fredoka for child-friendly mode -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="glass-bg-glow"></div>
+  
+  <header class="app-header">
+    <div class="container header-container">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i data-lucide="leaf"></i>
+        </div>
+        <span class="logo-text">EcoStep</span>
+      </div>
+      
+      <nav class="nav-links">
+        <a href="#dashboard" class="nav-link active"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
+        <a href="#calculators" class="nav-link"><i data-lucide="calculator"></i> <span>Calculators</span></a>
+        <a href="#actions" class="nav-link"><i data-lucide="sparkles"></i> <span>Action Hub</span></a>
+        <a href="#history" class="nav-link"><i data-lucide="history"></i> <span>History Log</span></a>
+      </nav>
+      
+      <div class="header-actions">
+        <div class="streak-badge" id="streakBadge" title="Keep logging your footprint to increase your streak!">
+          <i data-lucide="flame" class="streak-icon"></i>
+          <span id="streakCount">0</span> Day Streak
+        </div>
+        <button id="kidModeToggle" class="btn-kids-mode" aria-label="Toggle Simple / Kids Mode">
+          <i data-lucide="smile" id="kidsIcon"></i>
+          <span id="kidsToggleText">Kids Mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-content container">
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-text-content">
+        <span class="badge-pill">Step Towards Carbon Neutrality</span>
+        <h1 id="heroGreeting">Welcome back, Eco Guardian!</h1>
+        <p id="heroSubtitle">Every small step matters. Calculate your carbon footprint, set simple goals, and watch your impact shrink.</p>
+      </div>
+      <div class="hero-status-card glass-panel">
+        <div class="status-icon-box">
+          <i data-lucide="award" class="status-badge-icon"></i>
+        </div>
+        <div>
+          <span class="status-label">Your Current Rank</span>
+          <h3 id="userRank" class="status-val">Eco Seedling</h3>
+          <p id="rankNext" class="status-desc">Log your first emission to start tracking!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ECOKIDS & MASCOT EXPLAINER (VISIBLE IN BOTH MODES, HIGHLY PROMINENT IN KIDS MODE) -->
+    <section id="mascotSection" class="mascot-section glass-panel">
+      <div class="mascot-grid">
+        <div class="mascot-container">
+          <!-- Animated CSS Earth Mascot -->
+          <div class="earth-mascot-wrapper">
+            <div id="earthMascot" class="earth-mascot mood-happy">
+              <div class="continents"></div>
+              <div class="eyes">
+                <div class="eye left">
+                  <div class="pupil"></div>
+                </div>
+                <div class="eye right">
+                  <div class="pupil"></div>
+                </div>
+              </div>
+              <div class="blush"></div>
+              <div class="mouth"></div>
+            </div>
+            <div class="mascot-shadow"></div>
+          </div>
+        </div>
+        <div class="mascot-dialog">
+          <div class="speech-bubble">
+            <h4 id="mascotTitle">Hey there! I'm Earthy, your eco-buddy!</h4>
+            <p id="mascotSpeech">Right now, your carbon emissions look super clean! We haven't logged anything yet. Let's head down to the calculators below to track your transport, energy, food, and waste footprint!</p>
+            <div class="kids-analogies-grid" id="kidsAnalogies">
+              <div class="analogy-card">
+                <div class="analogy-icon-circle balloon-bg">
+                  <i data-lucide="wind"></i>
+                </div>
+                <div class="analogy-info">
+                  <span class="analogy-label">Filled Balloons</span>
+                  <span id="balloonValue" class="analogy-num">0</span>
+                </div>
+              </div>
+              <div class="analogy-card">
+                <div class="analogy-icon-circle tv-bg">
+                  <i data-lucide="tv"></i>
+                </div>
+                <div class="analogy-info">
+                  <span class="analogy-label">Hours of TV/Gaming</span>
+                  <span id="gamingValue" class="analogy-num">0</span>
+                </div>
+              </div>
+              <div class="analogy-card">
+                <div class="analogy-icon-circle tree-bg">
+                  <i data-lucide="trees"></i>
+                </div>
+                <div class="analogy-info">
+                  <span class="analogy-label">Daily Tree Work</span>
+                  <span id="treeValue" class="analogy-num">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboard" class="dashboard-section section-padding">
+      <h2 class="section-title"><i data-lucide="bar-chart-3"></i> Your Eco Dashboard</h2>
+      <div class="dashboard-grid">
+        <!-- Metric Summary Cards -->
+        <div class="dashboard-metrics">
+          <div class="metric-card glass-panel">
+            <div class="metric-icon val-co2"><i data-lucide="cloud"></i></div>
+            <div class="metric-details">
+              <h3>Monthly Footprint</h3>
+              <div class="metric-val-wrapper">
+                <span id="totalCO2" class="metric-num">0.0</span>
+                <span class="metric-unit">kg CO₂e</span>
+              </div>
+              <p class="metric-comparison" id="avgComparison">No data yet</p>
+            </div>
+          </div>
+
+          <div class="metric-card glass-panel">
+            <div class="metric-icon val-saved"><i data-lucide="sparkles"></i></div>
+            <div class="metric-details">
+              <h3>Active Pledges Savings</h3>
+              <div class="metric-val-wrapper">
+                <span id="totalSaved" class="metric-num">0.0</span>
+                <span class="metric-unit">kg CO₂e / mo</span>
+              </div>
+              <p class="metric-comparison" id="pledgeCount">0 actions active</p>
+            </div>
+          </div>
+
+          <div class="metric-card glass-panel">
+            <div class="metric-icon val-goal"><i data-lucide="target"></i></div>
+            <div class="metric-details">
+              <h3>Monthly Reduction Goal</h3>
+              <div class="metric-val-wrapper">
+                <input type="number" id="goalInput" class="goal-input" value="100" min="10" max="5000">
+                <span class="metric-unit">kg CO₂e</span>
+              </div>
+              <div class="goal-progress-container">
+                <div class="goal-progress-bar" id="goalProgressBar" style="width: 0%"></div>
+              </div>
+              <p class="metric-comparison" id="goalStatus">Set a goal & start tracking!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Card -->
+        <div class="chart-card glass-panel">
+          <div class="chart-header">
+            <h3>Carbon Sources Breakdown</h3>
+            <span class="chart-sub">Where do your emissions come from?</span>
+          </div>
+          <div class="chart-container-relative">
+            <canvas id="footprintChart"></canvas>
+            <div class="no-data-overlay" id="chartNoData">
+              <i data-lucide="pie-chart" class="no-data-icon"></i>
+              <p>Log emissions below to see breakdown!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATORS GRID -->
+    <section id="calculators" class="calculators-section section-padding">
+      <div class="section-header-block">
+        <h2 class="section-title"><i data-lucide="calculator"></i> Carbon Footprint Calculators</h2>
+        <p class="section-desc">Select a category, input your activities, and log them to your history dashboard.</p>
+      </div>
+
+      <div class="calculators-grid">
+        <!-- Transport Card -->
+        <div class="calc-card glass-panel" id="transportCalc">
+          <div class="calc-header transport-header">
+            <div class="calc-icon-wrapper"><i data-lucide="car"></i></div>
+            <h4>Transportation</h4>
+          </div>
+          <div class="calc-body">
+            <div class="input-group">
+              <label for="travelDistance">Travel Distance</label>
+              <div class="input-with-addon">
+                <input type="number" id="travelDistance" min="0" step="0.1" placeholder="2.5">
+                <span class="addon">km/week</span>
+              </div>
+            </div>
+          </div>
+          <div class="calc-footer">
+            <button class="btn-calculate" onclick="logEmission('transport')"><i data-lucide="plus"></i> Log Transport</button>
+          </div>
+        </div>
+
+        <!-- Home Energy Card -->
+        <div class="calc-card glass-panel" id="energyCalc">
+          <div class="calc-header energy-header">
+            <div class="calc-icon-wrapper"><i data-lucide="zap"></i></div>
+            <h4>Home Energy</h4>
+          </div>
+          <div class="calc-body">
+            <div class="input-group">
+              <label for="electricityHours">Electricity Usage</label>
+              <div class="input-with-addon">
+                <input type="number" id="electricityHours" min="0" step="0.5" placeholder="5">
+                <span class="addon">hours/day</span>
+              </div>
+            </div>
+          </div>
+          <div class="calc-footer">
+            <button class="btn-calculate" onclick="logEmission('energy')"><i data-lucide="plus"></i> Log Home Energy</button>
+          </div>
+        </div>
+
+        <!-- Diet / Food Card -->
+        <div class="calc-card glass-panel" id="foodCalc">
+          <div class="calc-header food-header">
+            <div class="calc-icon-wrapper"><i data-lucide="utensils"></i></div>
+            <h4>Diet & Food</h4>
+          </div>
+          <div class="calc-body">
+            <div class="input-group">
+              <label for="foodWeight">Food Consumed</label>
+              <div class="input-with-addon">
+                <input type="number" id="foodWeight" min="0" step="0.1" placeholder="3.5">
+                <span class="addon">kg/day</span>
+              </div>
+            </div>
+          </div>
+          <div class="calc-footer">
+            <button class="btn-calculate" onclick="logEmission('diet')"><i data-lucide="plus"></i> Log Diet Info</button>
+          </div>
+        </div>
+
+        <!-- Shopping & Waste Card -->
+        <div class="calc-card glass-panel" id="wasteCalc">
+          <div class="calc-header waste-header">
+            <div class="calc-icon-wrapper"><i data-lucide="trash-2"></i></div>
+            <h4>Shopping & Waste</h4>
+          </div>
+          <div class="calc-body">
+            <div class="input-group">
+              <label for="wasteBags">Waste Produced</label>
+              <div class="input-with-addon">
+                <input type="number" id="wasteBags" min="0" placeholder="2">
+                <span class="addon">bags/week</span>
+              </div>
+            </div>
+          </div>
+          <div class="calc-footer">
+            <button class="btn-calculate" onclick="logEmission('waste')"><i data-lucide="plus"></i> Log Waste Info</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTION GUIDE HUB -->
+    <section id="actions" class="actions-section section-padding">
+      <div class="section-header-block">
+        <h2 class="section-title"><i data-lucide="sparkles"></i> Personalized Action Guide</h2>
+        <p class="section-desc" id="actionSubtitle">Browse recommendations tailored to help you save emissions. Pledge to complete them to reduce your projected monthly score!</p>
+      </div>
+
+      <!-- Quick Category Filters -->
+      <div class="filter-pills">
+        <button class="filter-btn active" onclick="filterActions('all')">All Actions</button>
+        <button class="filter-btn" onclick="filterActions('transport')">Transport</button>
+        <button class="filter-btn" onclick="filterActions('energy')">Energy</button>
+        <button class="filter-btn" onclick="filterActions('diet')">Diet & Food</button>
+        <button class="filter-btn" onclick="filterActions('waste')">Waste & Shopping</button>
+      </div>
+
+      <div class="actions-grid" id="actionsGrid">
+        <!-- Actions will be dynamically generated by JS -->
+      </div>
+    </section>
+
+    <!-- HISTORY LOGS TABLE -->
+    <section id="history" class="history-section section-padding">
+      <div class="section-header-block-row">
+        <div>
+          <h2 class="section-title"><i data-lucide="history"></i> Footprint History Logs</h2>
+          <p class="section-desc">Manage and review your past footprint logs. Delete logs to recalculate your totals.</p>
+        </div>
+        <button class="btn-clear-all" onclick="clearAllLogs()"><i data-lucide="trash"></i> Clear All Data</button>
+      </div>
+
+      <div class="table-responsive glass-panel">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Details</th>
+              <th>Estimated CO₂e</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Dynamic rows will be inserted here -->
+            <tr class="empty-row-fallback">
+              <td colspan="5">No logs recorded yet. Start by filling out a calculator above!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <span class="footer-logo">EcoStep</span>
+        <p>Your step towards a healthier planet.</p>
+      </div>
+      <div class="footer-credits">
+        <p>Built with ❤️ for sustainability. Standard Carbon Factors adapted from EPA & IPCC guidelines.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="utils.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
